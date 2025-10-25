@@ -1,0 +1,1043 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message.text }}",
+        "options": {
+          "systemMessage": "=You are a professional receptionist for a creative agency. Your role is to help clients and visitors by:\n- Answering questions about the agency's services, pricing, portfolio, and team using the Knowledge Base Search tool\n- Scheduling meetings and appointments via Google Calendar\n- Sending emails on behalf of the agency via Gmail\n- Providing information about availability\n- Being friendly, professional, and helpful at all times\n\nWhen asked about the agency, always search the knowledge base first. When scheduling meetings, check the calendar for availability. Ask for the client's email before sending the email ,When sending emails, be professional and concise. When booking meetings, always save the meeting details (date, time, duration, topic , Name ) to Google Sheets using the Google Sheets Tool."
+        }
+      },
+      "id": "5e45a434-e71f-43b2-83d6-c0bfb7b3d390",
+      "name": "Receptionist Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        4240,
+        512
+      ]
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.message.chat }}"
+      },
+      "id": "415d2019-cfb6-4372-b42e-a03ed1e6f66e",
+      "name": "Conversation Memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        4112,
+        736
+      ]
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $fromAI('to', 'Email recipient address', 'string') }}",
+        "subject": "={{ $fromAI('subject', 'Email subject line', 'string') }}",
+        "message": "={{ $fromAI('message_html', 'Email message content', 'string') }}",
+        "options": {}
+      },
+      "id": "58c5c480-9c75-4bb3-a13c-457499c72231",
+      "name": "Gmail Tool",
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        4240,
+        736
+      ],
+      "webhookId": "6122cad5-c63a-4ddb-8585-5ddbcb7d4c84",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "TLQa1MGV0BRIoXsU",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "toutouwahab16@gmail.com",
+          "mode": "list",
+          "cachedResultName": "toutouwahab16@gmail.com"
+        },
+        "start": "={{ $fromAI('start_datetime', 'Meeting start date and time in ISO format like 2025-01-20T14:00:00', 'string') }}",
+        "end": "={{ $fromAI('end_datetime', 'Meeting end date and time in ISO format like 2025-01-20T15:00:00', 'string') }}",
+        "additionalFields": {
+          "description": "={{ $fromAI('meeting_description', 'Meeting description or notes', 'string', '') }}",
+          "summary": "={{ $fromAI('meeting_title', 'Meeting title or subject', 'string') }}"
+        }
+      },
+      "id": "aaced657-0477-4bc9-97dd-8f496143bbee",
+      "name": "Google Calendar Tool",
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        4368,
+        736
+      ],
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "t9Oa5kgz59BLpOm2",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 2
+            }
+          ]
+        }
+      },
+      "id": "3c60c465-fe50-4e9c-94d8-847af067a51c",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        3104,
+        1120
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "memoryKey": {
+          "__rl": true,
+          "value": "vector_store_key",
+          "mode": "list",
+          "cachedResultName": "vector_store_key"
+        }
+      },
+      "id": "c21386b4-8182-481f-848f-68044dbb51a9",
+      "name": "Vector Store - Insert",
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreInMemory",
+      "typeVersion": 1.3,
+      "position": [
+        4160,
+        1120
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Search the agency knowledge base for information about services, pricing, portfolio, team, and company information",
+        "memoryKey": {
+          "__rl": true,
+          "mode": "list",
+          "value": "vector_store_key"
+        }
+      },
+      "id": "466384f8-5547-4fb0-8caf-869720f4bc35",
+      "name": "Vector Store - Retrieve",
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreInMemory",
+      "typeVersion": 1.3,
+      "position": [
+        4496,
+        736
+      ]
+    },
+    {
+      "parameters": {
+        "textSplittingMode": "custom",
+        "options": {}
+      },
+      "id": "9d4e3466-ca99-4f8f-a7d1-766a47b16780",
+      "name": "Document Loader",
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        4144,
+        1344
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "63ca5d17-6365-4942-b75e-2d6f8b18477a",
+      "name": "Text Splitter",
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "typeVersion": 1,
+      "position": [
+        4224,
+        1552
+      ]
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        3840,
+        512
+      ],
+      "id": "7977ea21-9d41-42a9-b507-84c78e52498e",
+      "name": "Telegram Trigger",
+      "webhookId": "59cd24f2-883c-47b5-9419-ba72bc1af96a",
+      "credentials": {
+        "telegramApi": {
+          "id": "r1oYmhyeCsq8KwZu",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.output }}",
+        "additionalFields": {
+          "appendAttribution": false,
+          "disable_web_page_preview": false,
+          "parse_mode": "HTML"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        4752,
+        512
+      ],
+      "id": "f77b0030-364c-4741-8c4c-036a11ba09ae",
+      "name": "Send a text message",
+      "webhookId": "87fb89d2-c055-4b97-8de2-5ffcdb44d766",
+      "credentials": {
+        "telegramApi": {
+          "id": "r1oYmhyeCsq8KwZu",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "1ksCm-HNKqZX--p66jrbMVaDi4kPBP6LZqMz51Cg33Wo"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "id",
+          "cachedResultName": "Feuille 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ksCm-HNKqZX--p66jrbMVaDi4kPBP6LZqMz51Cg33Wo/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Date": "={{ $fromAI('meeting_date', 'Meeting date in format YYYY-MM-DD', 'string') }}",
+            "Time": "={{ $fromAI('meeting_time', 'Meeting time in format HH:MM', 'string') }}",
+            "Duration": "={{ $fromAI('meeting_duration', 'Meeting duration like 1 hour or 30 minutes', 'string') }}",
+            "Topic": "={{ $fromAI('meeting_topic', 'Meeting topic or subject', 'string') }}",
+            "Name": "={{ $fromAI('Name', 'Name or Id', 'string') }}",
+            "Email": "={{ $fromAI('Email') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Time",
+              "displayName": "Time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Duration",
+              "displayName": "Duration",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Topic",
+              "displayName": "Topic",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "05aab0a3-e022-4544-b4c7-2b9bbeb5d10a",
+      "name": "Google Sheets Tool",
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        4784,
+        736
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "olQ6wyiGPT9RAMqa",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        3984,
+        736
+      ],
+      "id": "77a688bf-8181-4f82-8901-14253a41fb6e",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "VHMj83hjmfA3i9Rq",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        3984,
+        1328
+      ],
+      "id": "b1b0c443-02d6-4509-97a0-47233ae2644d",
+      "name": "Embeddings Google Gemini",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "VHMj83hjmfA3i9Rq",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        4528,
+        896
+      ],
+      "id": "38fc785b-aabf-4bff-beeb-1ad199d08406",
+      "name": "Embeddings Google Gemini1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "VHMj83hjmfA3i9Rq",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=What are all services offered by Braver Law Firm? everything important i need you to extract it and save it like pricing and hours and all  ",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        3472,
+        1120
+      ],
+      "id": "c2052c55-5386-4a01-85ba-72e22bdd2448",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        3296,
+        1360
+      ],
+      "id": "e12f7fde-31f7-4706-9c57-1d900ff00553",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "VHMj83hjmfA3i9Rq",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "toolDescription": "Makes an HTTP request and returns the response data, extract all the data possible to use it in the description of the agency, about their services and pricing, check everything on their website and use it ",
+        "url": "https://raw.githubusercontent.com/999WAHAB/IA-Agency/main/README.md",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.2,
+      "position": [
+        3680,
+        1376
+      ],
+      "id": "045c1839-0a60-4c22-b40e-46f5317db0a1",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "updates": [
+          "messages"
+        ],
+        "options": {}
+      },
+      "type": "n8n-nodes-base.whatsAppTrigger",
+      "typeVersion": 1,
+      "position": [
+        2624,
+        512
+      ],
+      "id": "4357195a-027a-4649-8362-3fd8ea507ff0",
+      "name": "WhatsApp Trigger",
+      "webhookId": "fc638759-144c-4a20-a64d-d1cdf10abf73",
+      "credentials": {
+        "whatsAppTriggerApi": {
+          "id": "xSteNlHUMkHfj0wi",
+          "name": "WhatsApp OAuth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "={{ $('WhatsApp Trigger').item.json.metadata.phone_number_id }}",
+        "recipientPhoneNumber": "={{ $('WhatsApp Trigger').item.json.messages[0].from }}",
+        "textBody": "={{ $json.output }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [
+        3536,
+        512
+      ],
+      "id": "e6bcc3ce-dce5-4690-8b75-5154bdcd4258",
+      "name": "Send message",
+      "webhookId": "8e9f8fdd-39dd-433a-9da1-edbb86668b0f",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "7kKnaZZuoD6igSyy",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.messages[0].text.body }}",
+        "options": {
+          "systemMessage": "=You are a professional receptionist for a creative agency. Your role is to help clients and visitors by:\n- Answering questions about the agency's services, pricing, portfolio, and team using the Knowledge Base Search tool\n- Scheduling meetings and appointments via Google Calendar\n- Sending emails on behalf of the agency via Gmail\n- Providing information about availability\n- Being friendly, professional, and helpful at all times\n\nWhen asked about the agency, always search the knowledge base first. When scheduling meetings, check the calendar for availability. When sending emails, be professional and concise. When booking meetings, always save the meeting details (date, time, duration, topic , Name ) to Google Sheets using the Google Sheets Tool."
+        }
+      },
+      "id": "d9411a5e-12bf-43e1-9f4f-65774bf44258",
+      "name": "Receptionist Agent1",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        2960,
+        512
+      ]
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.messages[0].id }}"
+      },
+      "id": "dc140113-2ae6-4a92-a7d7-08e1f04878f1",
+      "name": "Conversation Memory1",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        2832,
+        736
+      ]
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $fromAI('to', 'Email recipient address', 'string') }}",
+        "subject": "={{ $fromAI('subject', 'Email subject line', 'string') }}",
+        "message": "={{ $fromAI('message_html', 'Email message content', 'string') }}",
+        "options": {}
+      },
+      "id": "f4e53983-6008-4bb4-8fba-fe8b829dc17a",
+      "name": "Gmail Tool1",
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        2960,
+        736
+      ],
+      "webhookId": "6122cad5-c63a-4ddb-8585-5ddbcb7d4c84",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "TLQa1MGV0BRIoXsU",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "toutouwahab16@gmail.com",
+          "mode": "list",
+          "cachedResultName": "toutouwahab16@gmail.com"
+        },
+        "start": "={{ $fromAI('start_datetime', 'Meeting start date and time in ISO format like 2025-01-20T14:00:00', 'string') }}",
+        "end": "={{ $fromAI('end_datetime', 'Meeting end date and time in ISO format like 2025-01-20T15:00:00', 'string') }}",
+        "additionalFields": {
+          "description": "={{ $fromAI('meeting_description', 'Meeting description or notes', 'string', '') }}",
+          "summary": "={{ $fromAI('meeting_title', 'Meeting title or subject', 'string') }}"
+        }
+      },
+      "id": "7fb7bbeb-fad9-434b-b2a3-f8480c7d7960",
+      "name": "Google Calendar Tool1",
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        3088,
+        736
+      ],
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "t9Oa5kgz59BLpOm2",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Search the agency knowledge base for information about services, pricing, portfolio, team, and company information",
+        "memoryKey": {
+          "__rl": true,
+          "mode": "list",
+          "value": "vector_store_key"
+        }
+      },
+      "id": "da93b723-cb2f-467a-bdaa-9cbb7eeccb6d",
+      "name": "Vector Store - Retrieve1",
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreInMemory",
+      "typeVersion": 1.3,
+      "position": [
+        3232,
+        752
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "1ksCm-HNKqZX--p66jrbMVaDi4kPBP6LZqMz51Cg33Wo"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "id",
+          "cachedResultName": "Feuille 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ksCm-HNKqZX--p66jrbMVaDi4kPBP6LZqMz51Cg33Wo/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Date": "={{ $fromAI('meeting_date', 'Meeting date in format YYYY-MM-DD', 'string') }}",
+            "Time": "={{ $fromAI('meeting_time', 'Meeting time in format HH:MM', 'string') }}",
+            "Duration": "={{ $fromAI('meeting_duration', 'Meeting duration like 1 hour or 30 minutes', 'string') }}",
+            "Topic": "={{ $fromAI('meeting_topic', 'Meeting topic or subject', 'string') }}",
+            "Name": "={{ $fromAI('Name', 'Name or Id', 'string') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Time",
+              "displayName": "Time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Duration",
+              "displayName": "Duration",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Topic",
+              "displayName": "Topic",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "0cb092b6-0073-48b5-b6f4-0320469d9d03",
+      "name": "Google Sheets Tool1",
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        3504,
+        736
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "olQ6wyiGPT9RAMqa",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        2704,
+        736
+      ],
+      "id": "a104a8e9-2bff-403a-971e-b745e36edc2c",
+      "name": "Google Gemini Chat Model2",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "VHMj83hjmfA3i9Rq",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        3280,
+        880
+      ],
+      "id": "58858d78-b941-4d38-aab9-48fb1597bf4f",
+      "name": "Embeddings Google Gemini2",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "VHMj83hjmfA3i9Rq",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "This section is for WhatsApp ",
+        "height": 688,
+        "width": 1152
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2576,
+        336
+      ],
+      "id": "0b6555d9-1cb6-44c3-8666-9da14f7c084d",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "This section if for telegram",
+        "height": 688,
+        "width": 1184,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        3776,
+        336
+      ],
+      "id": "9138ea99-42fd-4e11-b37c-3c9b27f968fd",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "Http Request to get all the informations about the Agency or the Commerce.",
+        "height": 608,
+        "width": 1488,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        3008,
+        1072
+      ],
+      "id": "975f6893-2fc7-439b-b813-4c1186805481",
+      "name": "Sticky Note2"
+    }
+  ],
+  "connections": {
+    "Receptionist Agent": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Conversation Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Receptionist Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail Tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "Receptionist Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Calendar Tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "Receptionist Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Vector Store - Retrieve": {
+      "ai_tool": [
+        [
+          {
+            "node": "Receptionist Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Document Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Vector Store - Insert",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Text Splitter": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Document Loader",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Receptionist Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets Tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "Receptionist Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Receptionist Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Google Gemini": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Vector Store - Insert",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Google Gemini1": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Vector Store - Retrieve",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Vector Store - Insert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WhatsApp Trigger": {
+      "main": [
+        [
+          {
+            "node": "Receptionist Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Receptionist Agent1": {
+      "main": [
+        [
+          {
+            "node": "Send message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Conversation Memory1": {
+      "ai_memory": [
+        [
+          {
+            "node": "Receptionist Agent1",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail Tool1": {
+      "ai_tool": [
+        [
+          {
+            "node": "Receptionist Agent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Calendar Tool1": {
+      "ai_tool": [
+        [
+          {
+            "node": "Receptionist Agent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Vector Store - Retrieve1": {
+      "ai_tool": [
+        [
+          {
+            "node": "Receptionist Agent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets Tool1": {
+      "ai_tool": [
+        [
+          {
+            "node": "Receptionist Agent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Receptionist Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Google Gemini2": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Vector Store - Retrieve1",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "b710af4293fa8bd6d1d9b02aab24e22bf1f6dcb487f2da884607315310ecb196"
+  }
+}
