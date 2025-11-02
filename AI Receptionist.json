@@ -5,16 +5,16 @@
         "promptType": "define",
         "text": "={{ $json.message.text }}",
         "options": {
-          "systemMessage": "=You are a professional receptionist for a creative agency. Your role is to help clients and visitors by:\n- Answering questions about the agency's services, pricing, portfolio, and team using the Knowledge Base Search tool\n- Scheduling meetings and appointments via Google Calendar\n- Sending emails on behalf of the agency via Gmail\n- Providing information about availability\n- Being friendly, professional, and helpful at all times\n\nWhen asked about the agency, always search the knowledge base first. When scheduling meetings, check the calendar for availability. Ask for the client's email before sending the email ,When sending emails, be professional and concise. When booking meetings, always save the meeting details (date, time, duration, topic , Name ) to Google Sheets using the Google Sheets Tool."
+          "systemMessage": "=You are a professional receptionist for a creative agency. Your role is to help clients and visitors by:\n- Answering questions about the agency's services, pricing, portfolio, and team using the Knowledge Base Search tool\n- Scheduling meetings and appointments via Google Calendar\n- Sending emails on behalf of the agency via Gmail\n- Providing information about availability\n- Being friendly, professional, and helpful at all times\n\nWhen asked about the agency, always search the knowledge base first. Before scheduling any meeting, ALWAYS use the Check Calendar Availability tool to verify the requested time slot is free. If there are conflicts, suggest alternative times based on the availability check results. When scheduling meetings, check the calendar for availability. Ask for the client's email before sending the email ,When sending emails, be professional and concise. When booking meetings, always save the meeting details (date, time, duration, topic , Name ) to Google Sheets using the Google Sheets Tool."
         }
       },
-      "id": "5e45a434-e71f-43b2-83d6-c0bfb7b3d390",
+      "id": "d4904dca-75a9-4124-b90f-905dbfee151e",
       "name": "Receptionist Agent",
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 2.2,
       "position": [
-        4240,
-        512
+        376,
+        752
       ]
     },
     {
@@ -22,13 +22,13 @@
         "sessionIdType": "customKey",
         "sessionKey": "={{ $json.message.chat }}"
       },
-      "id": "415d2019-cfb6-4372-b42e-a03ed1e6f66e",
+      "id": "993b8874-fab7-4e6b-885c-0d323561ad03",
       "name": "Conversation Memory",
       "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
       "typeVersion": 1.3,
       "position": [
-        4112,
-        736
+        192,
+        976
       ]
     },
     {
@@ -38,18 +38,18 @@
         "message": "={{ $fromAI('message_html', 'Email message content', 'string') }}",
         "options": {}
       },
-      "id": "58c5c480-9c75-4bb3-a13c-457499c72231",
+      "id": "6131b525-9341-450b-ab5b-333ad02c5c57",
       "name": "Gmail Tool",
       "type": "n8n-nodes-base.gmailTool",
       "typeVersion": 2.1,
       "position": [
-        4240,
-        736
+        320,
+        976
       ],
       "webhookId": "6122cad5-c63a-4ddb-8585-5ddbcb7d4c84",
       "credentials": {
         "gmailOAuth2": {
-          "id": "TLQa1MGV0BRIoXsU",
+          "id": "3v9MWvJywsi5GaJI",
           "name": "Gmail account"
         }
       }
@@ -69,17 +69,17 @@
           "summary": "={{ $fromAI('meeting_title', 'Meeting title or subject', 'string') }}"
         }
       },
-      "id": "aaced657-0477-4bc9-97dd-8f496143bbee",
+      "id": "f90f2c17-a536-4ee5-bdd5-1b3001bd870d",
       "name": "Google Calendar Tool",
       "type": "n8n-nodes-base.googleCalendarTool",
       "typeVersion": 1.3,
       "position": [
-        4368,
-        736
+        448,
+        976
       ],
       "credentials": {
         "googleCalendarOAuth2Api": {
-          "id": "t9Oa5kgz59BLpOm2",
+          "id": "K54lAOKNHNKjajR4",
           "name": "Google Calendar account"
         }
       }
@@ -94,13 +94,13 @@
           ]
         }
       },
-      "id": "3c60c465-fe50-4e9c-94d8-847af067a51c",
+      "id": "67880d69-e14f-4a4a-b8c1-668ea325a739",
       "name": "Schedule Trigger",
       "type": "n8n-nodes-base.scheduleTrigger",
       "typeVersion": 1.2,
       "position": [
-        3104,
-        1120
+        -160,
+        1600
       ]
     },
     {
@@ -113,13 +113,13 @@
           "cachedResultName": "vector_store_key"
         }
       },
-      "id": "c21386b4-8182-481f-848f-68044dbb51a9",
+      "id": "285dad36-9b17-459a-843e-4981df161f8a",
       "name": "Vector Store - Insert",
       "type": "@n8n/n8n-nodes-langchain.vectorStoreInMemory",
       "typeVersion": 1.3,
       "position": [
-        4160,
-        1120
+        448,
+        1600
       ]
     },
     {
@@ -132,13 +132,13 @@
           "value": "vector_store_key"
         }
       },
-      "id": "466384f8-5547-4fb0-8caf-869720f4bc35",
+      "id": "5199fc55-bc3b-4a04-96d2-53af2a1c5835",
       "name": "Vector Store - Retrieve",
       "type": "@n8n/n8n-nodes-langchain.vectorStoreInMemory",
       "typeVersion": 1.3,
       "position": [
-        4496,
-        736
+        576,
+        976
       ]
     },
     {
@@ -146,26 +146,26 @@
         "textSplittingMode": "custom",
         "options": {}
       },
-      "id": "9d4e3466-ca99-4f8f-a7d1-766a47b16780",
+      "id": "5feddd52-d177-4888-9ffd-0aa8733b9f62",
       "name": "Document Loader",
       "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
       "typeVersion": 1.1,
       "position": [
-        4144,
-        1344
+        544,
+        1824
       ]
     },
     {
       "parameters": {
         "options": {}
       },
-      "id": "63ca5d17-6365-4942-b75e-2d6f8b18477a",
+      "id": "6c577245-5961-4c7a-8fe6-6c452cb26e40",
       "name": "Text Splitter",
       "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
       "typeVersion": 1,
       "position": [
-        4224,
-        1552
+        624,
+        2032
       ]
     },
     {
@@ -178,15 +178,15 @@
       "type": "n8n-nodes-base.telegramTrigger",
       "typeVersion": 1.2,
       "position": [
-        3840,
-        512
+        -160,
+        960
       ],
-      "id": "7977ea21-9d41-42a9-b507-84c78e52498e",
+      "id": "f4eeed85-c218-4e78-96d2-52fe035a47e7",
       "name": "Telegram Trigger",
       "webhookId": "59cd24f2-883c-47b5-9419-ba72bc1af96a",
       "credentials": {
         "telegramApi": {
-          "id": "r1oYmhyeCsq8KwZu",
+          "id": "cytIKK28bNndmdSG",
           "name": "Telegram account"
         }
       }
@@ -204,15 +204,15 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        4752,
-        512
+        1200,
+        960
       ],
-      "id": "f77b0030-364c-4741-8c4c-036a11ba09ae",
+      "id": "967d1b11-d2c8-417e-bf93-7a61d0c3ed7f",
       "name": "Send a text message",
       "webhookId": "87fb89d2-c055-4b97-8de2-5ffcdb44d766",
       "credentials": {
         "telegramApi": {
-          "id": "r1oYmhyeCsq8KwZu",
+          "id": "cytIKK28bNndmdSG",
           "name": "Telegram account"
         }
       }
@@ -310,17 +310,17 @@
         },
         "options": {}
       },
-      "id": "05aab0a3-e022-4544-b4c7-2b9bbeb5d10a",
+      "id": "68895e68-d82e-40c9-b18a-3c072c4e587f",
       "name": "Google Sheets Tool",
       "type": "n8n-nodes-base.googleSheetsTool",
       "typeVersion": 4.7,
       "position": [
-        4784,
-        736
+        864,
+        976
       ],
       "credentials": {
         "googleSheetsOAuth2Api": {
-          "id": "olQ6wyiGPT9RAMqa",
+          "id": "ayl939ZhmAg6kK8b",
           "name": "Google Sheets account"
         }
       }
@@ -332,14 +332,14 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
       "typeVersion": 1,
       "position": [
-        3984,
-        736
+        64,
+        976
       ],
-      "id": "77a688bf-8181-4f82-8901-14253a41fb6e",
+      "id": "d9d9cfe5-6d56-47ca-be51-10b4b4f91ff2",
       "name": "Google Gemini Chat Model",
       "credentials": {
         "googlePalmApi": {
-          "id": "VHMj83hjmfA3i9Rq",
+          "id": "UFb9bhqYXxdeFCvH",
           "name": "Google Gemini(PaLM) Api account"
         }
       }
@@ -349,14 +349,14 @@
       "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
       "typeVersion": 1,
       "position": [
-        3984,
-        1328
+        416,
+        1824
       ],
-      "id": "b1b0c443-02d6-4509-97a0-47233ae2644d",
+      "id": "b3d6cc1c-680b-402e-a2f1-eb121a7c5729",
       "name": "Embeddings Google Gemini",
       "credentials": {
         "googlePalmApi": {
-          "id": "VHMj83hjmfA3i9Rq",
+          "id": "UFb9bhqYXxdeFCvH",
           "name": "Google Gemini(PaLM) Api account"
         }
       }
@@ -366,14 +366,14 @@
       "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
       "typeVersion": 1,
       "position": [
-        4528,
-        896
+        656,
+        1184
       ],
-      "id": "38fc785b-aabf-4bff-beeb-1ad199d08406",
+      "id": "b6e71547-3452-40d5-a2d5-cff5c9324a26",
       "name": "Embeddings Google Gemini1",
       "credentials": {
         "googlePalmApi": {
-          "id": "VHMj83hjmfA3i9Rq",
+          "id": "UFb9bhqYXxdeFCvH",
           "name": "Google Gemini(PaLM) Api account"
         }
       }
@@ -387,10 +387,10 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 2.2,
       "position": [
-        3472,
-        1120
+        64,
+        1600
       ],
-      "id": "c2052c55-5386-4a01-85ba-72e22bdd2448",
+      "id": "30003737-478e-46c7-98f9-f1b2a6a187fe",
       "name": "AI Agent"
     },
     {
@@ -400,14 +400,14 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
       "typeVersion": 1,
       "position": [
-        3296,
-        1360
+        72,
+        1824
       ],
-      "id": "e12f7fde-31f7-4706-9c57-1d900ff00553",
+      "id": "70b6993f-c213-44d6-ace3-8a1f8313c6e4",
       "name": "Google Gemini Chat Model1",
       "credentials": {
         "googlePalmApi": {
-          "id": "VHMj83hjmfA3i9Rq",
+          "id": "UFb9bhqYXxdeFCvH",
           "name": "Google Gemini(PaLM) Api account"
         }
       }
@@ -421,10 +421,10 @@
       "type": "n8n-nodes-base.httpRequestTool",
       "typeVersion": 4.2,
       "position": [
-        3680,
-        1376
+        200,
+        1824
       ],
-      "id": "045c1839-0a60-4c22-b40e-46f5317db0a1",
+      "id": "08b23242-0fbf-4745-a91a-20991b836901",
       "name": "HTTP Request"
     },
     {
@@ -437,15 +437,15 @@
       "type": "n8n-nodes-base.whatsAppTrigger",
       "typeVersion": 1,
       "position": [
-        2624,
-        512
+        -160,
+        320
       ],
-      "id": "4357195a-027a-4649-8362-3fd8ea507ff0",
+      "id": "e596f155-8614-4453-a9fe-936ab3c3f8bf",
       "name": "WhatsApp Trigger",
       "webhookId": "fc638759-144c-4a20-a64d-d1cdf10abf73",
       "credentials": {
         "whatsAppTriggerApi": {
-          "id": "xSteNlHUMkHfj0wi",
+          "id": "TU1YPPHQjGV8Ja3y",
           "name": "WhatsApp OAuth account"
         }
       }
@@ -461,15 +461,15 @@
       "type": "n8n-nodes-base.whatsApp",
       "typeVersion": 1.1,
       "position": [
-        3536,
-        512
+        1200,
+        320
       ],
-      "id": "e6bcc3ce-dce5-4690-8b75-5154bdcd4258",
+      "id": "b7e86ac7-8fe6-43cb-9f96-a3a3be8f6e9a",
       "name": "Send message",
       "webhookId": "8e9f8fdd-39dd-433a-9da1-edbb86668b0f",
       "credentials": {
         "whatsAppApi": {
-          "id": "7kKnaZZuoD6igSyy",
+          "id": "NuVEtQQGCz1BVj87",
           "name": "WhatsApp account"
         }
       }
@@ -479,16 +479,16 @@
         "promptType": "define",
         "text": "={{ $json.messages[0].text.body }}",
         "options": {
-          "systemMessage": "=You are a professional receptionist for a creative agency. Your role is to help clients and visitors by:\n- Answering questions about the agency's services, pricing, portfolio, and team using the Knowledge Base Search tool\n- Scheduling meetings and appointments via Google Calendar\n- Sending emails on behalf of the agency via Gmail\n- Providing information about availability\n- Being friendly, professional, and helpful at all times\n\nWhen asked about the agency, always search the knowledge base first. When scheduling meetings, check the calendar for availability. When sending emails, be professional and concise. When booking meetings, always save the meeting details (date, time, duration, topic , Name ) to Google Sheets using the Google Sheets Tool."
+          "systemMessage": "=You are a professional receptionist for a creative agency. Your role is to help clients and visitors by:\n- Answering questions about the agency's services, pricing, portfolio, and team using the Knowledge Base Search tool\n- Scheduling meetings and appointments via Google Calendar\n- Sending emails on behalf of the agency via Gmail\n- Providing information about availability\n- Being friendly, professional, and helpful at all times\n\nWhen asked about the agency, always search the knowledge base first. Before scheduling any meeting, ALWAYS use the Check Calendar Availability tool to verify the requested time slot is free. If there are conflicts, suggest alternative times based on the availability check results. When scheduling meetings, check the calendar for availability. When sending emails, be professional and concise. When booking meetings, always save the meeting details (date, time, duration, topic , Name ) to Google Sheets using the Google Sheets Tool."
         }
       },
-      "id": "d9411a5e-12bf-43e1-9f4f-65774bf44258",
+      "id": "5ca079a0-213f-49c4-b7d1-5918a5e4b154",
       "name": "Receptionist Agent1",
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 2.2,
       "position": [
-        2960,
-        512
+        376,
+        112
       ]
     },
     {
@@ -496,13 +496,13 @@
         "sessionIdType": "customKey",
         "sessionKey": "={{ $json.messages[0].id }}"
       },
-      "id": "dc140113-2ae6-4a92-a7d7-08e1f04878f1",
+      "id": "077afc03-cdd7-4a5e-973d-c6295e8625bc",
       "name": "Conversation Memory1",
       "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
       "typeVersion": 1.3,
       "position": [
-        2832,
-        736
+        192,
+        336
       ]
     },
     {
@@ -512,18 +512,18 @@
         "message": "={{ $fromAI('message_html', 'Email message content', 'string') }}",
         "options": {}
       },
-      "id": "f4e53983-6008-4bb4-8fba-fe8b829dc17a",
+      "id": "ab018e11-89b1-4e0a-9e94-df22a99f8bee",
       "name": "Gmail Tool1",
       "type": "n8n-nodes-base.gmailTool",
       "typeVersion": 2.1,
       "position": [
-        2960,
-        736
+        320,
+        336
       ],
       "webhookId": "6122cad5-c63a-4ddb-8585-5ddbcb7d4c84",
       "credentials": {
         "gmailOAuth2": {
-          "id": "TLQa1MGV0BRIoXsU",
+          "id": "3v9MWvJywsi5GaJI",
           "name": "Gmail account"
         }
       }
@@ -543,17 +543,17 @@
           "summary": "={{ $fromAI('meeting_title', 'Meeting title or subject', 'string') }}"
         }
       },
-      "id": "7fb7bbeb-fad9-434b-b2a3-f8480c7d7960",
+      "id": "a12f4ec4-5333-4021-b3dc-5f8057661309",
       "name": "Google Calendar Tool1",
       "type": "n8n-nodes-base.googleCalendarTool",
       "typeVersion": 1.3,
       "position": [
-        3088,
-        736
+        448,
+        336
       ],
       "credentials": {
         "googleCalendarOAuth2Api": {
-          "id": "t9Oa5kgz59BLpOm2",
+          "id": "K54lAOKNHNKjajR4",
           "name": "Google Calendar account"
         }
       }
@@ -568,13 +568,13 @@
           "value": "vector_store_key"
         }
       },
-      "id": "da93b723-cb2f-467a-bdaa-9cbb7eeccb6d",
+      "id": "fa8ae4c4-350e-4dde-b5f8-2b4db4869577",
       "name": "Vector Store - Retrieve1",
       "type": "@n8n/n8n-nodes-langchain.vectorStoreInMemory",
       "typeVersion": 1.3,
       "position": [
-        3232,
-        752
+        576,
+        336
       ]
     },
     {
@@ -659,17 +659,17 @@
         },
         "options": {}
       },
-      "id": "0cb092b6-0073-48b5-b6f4-0320469d9d03",
+      "id": "6767b6d5-db2e-4e1f-ba88-b5606190b41f",
       "name": "Google Sheets Tool1",
       "type": "n8n-nodes-base.googleSheetsTool",
       "typeVersion": 4.7,
       "position": [
-        3504,
-        736
+        864,
+        336
       ],
       "credentials": {
         "googleSheetsOAuth2Api": {
-          "id": "olQ6wyiGPT9RAMqa",
+          "id": "ayl939ZhmAg6kK8b",
           "name": "Google Sheets account"
         }
       }
@@ -681,14 +681,14 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
       "typeVersion": 1,
       "position": [
-        2704,
-        736
+        64,
+        336
       ],
-      "id": "a104a8e9-2bff-403a-971e-b745e36edc2c",
+      "id": "8b220685-352b-4023-b7f9-41c45bc5059f",
       "name": "Google Gemini Chat Model2",
       "credentials": {
         "googlePalmApi": {
-          "id": "VHMj83hjmfA3i9Rq",
+          "id": "UFb9bhqYXxdeFCvH",
           "name": "Google Gemini(PaLM) Api account"
         }
       }
@@ -698,14 +698,14 @@
       "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
       "typeVersion": 1,
       "position": [
-        3280,
-        880
+        656,
+        544
       ],
-      "id": "58858d78-b941-4d38-aab9-48fb1597bf4f",
+      "id": "3989be6e-3721-4faf-95c7-2316143e5a43",
       "name": "Embeddings Google Gemini2",
       "credentials": {
         "googlePalmApi": {
-          "id": "VHMj83hjmfA3i9Rq",
+          "id": "UFb9bhqYXxdeFCvH",
           "name": "Google Gemini(PaLM) Api account"
         }
       }
@@ -719,10 +719,10 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        2576,
-        336
+        -8,
+        0
       ],
-      "id": "0b6555d9-1cb6-44c3-8666-9da14f7c084d",
+      "id": "018852ad-511f-4c7b-8b24-fd27c38424b7",
       "name": "Sticky Note"
     },
     {
@@ -735,10 +735,10 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        3776,
-        336
+        -24,
+        640
       ],
-      "id": "9138ea99-42fd-4e11-b37c-3c9b27f968fd",
+      "id": "2b6144e6-f08e-4bbc-b4af-a4df5935fc4e",
       "name": "Sticky Note1"
     },
     {
@@ -751,11 +751,69 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        3008,
-        1072
+        -432,
+        1568
       ],
-      "id": "975f6893-2fc7-439b-b813-4c1186805481",
+      "id": "b3e3c259-ba38-4ecd-aff4-cde4a2fae3e1",
       "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Check calendar availability for specific dates and times to avoid scheduling conflicts",
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "mode": "id",
+          "value": "toutouwahab16@gmail.com"
+        },
+        "timeMin": "={{ $fromAI('check_start_date', 'Start date/time to check availability in ISO format', 'string') }}",
+        "timeMax": "={{ $fromAI('check_end_date', 'End date/time to check availability in ISO format', 'string') }}",
+        "options": {}
+      },
+      "id": "ddd29c8d-50df-4a43-8c1b-d4c1eaab4b5b",
+      "name": "Check Calendar Availability - Telegram",
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        992,
+        976
+      ],
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "K54lAOKNHNKjajR4",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Check calendar availability for specific dates and times to avoid scheduling conflicts",
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "mode": "id",
+          "value": "toutouwahab16@gmail.com"
+        },
+        "timeMin": "={{ $fromAI('check_start_date', 'Start date/time to check availability in ISO format', 'string') }}",
+        "timeMax": "={{ $fromAI('check_end_date', 'End date/time to check availability in ISO format', 'string') }}",
+        "options": {}
+      },
+      "id": "fbcca1df-156d-4f3a-a771-39fbbc55fc3b",
+      "name": "Check Calendar Availability - WhatsApp",
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        992,
+        336
+      ],
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "K54lAOKNHNKjajR4",
+          "name": "Google Calendar account"
+        }
+      }
     }
   ],
   "connections": {
@@ -1033,11 +1091,33 @@
           }
         ]
       ]
+    },
+    "Check Calendar Availability - Telegram": {
+      "ai_tool": [
+        [
+          {
+            "node": "Receptionist Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Calendar Availability - WhatsApp": {
+      "ai_tool": [
+        [
+          {
+            "node": "Receptionist Agent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "pinData": {},
   "meta": {
     "templateCredsSetupCompleted": true,
-    "instanceId": "b710af4293fa8bd6d1d9b02aab24e22bf1f6dcb487f2da884607315310ecb196"
+    "instanceId": "45672ef8714966daa5bab2f9c144e11992cbcd83dc0f505af5c5ce7f5684e405"
   }
 }
