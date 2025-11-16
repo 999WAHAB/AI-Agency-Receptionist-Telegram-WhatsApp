@@ -13,7 +13,7 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 2.2,
       "position": [
-        376,
+        384,
         752
       ]
     },
@@ -400,7 +400,7 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
       "typeVersion": 1,
       "position": [
-        72,
+        80,
         1824
       ],
       "id": "70b6993f-c213-44d6-ace3-8a1f8313c6e4",
@@ -421,7 +421,7 @@
       "type": "n8n-nodes-base.httpRequestTool",
       "typeVersion": 4.2,
       "position": [
-        200,
+        208,
         1824
       ],
       "id": "08b23242-0fbf-4745-a91a-20991b836901",
@@ -487,7 +487,7 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 2.2,
       "position": [
-        376,
+        384,
         112
       ]
     },
@@ -719,7 +719,7 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        -8,
+        -16,
         0
       ],
       "id": "018852ad-511f-4c7b-8b24-fd27c38424b7",
@@ -735,7 +735,7 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        -24,
+        -32,
         640
       ],
       "id": "2b6144e6-f08e-4bbc-b4af-a4df5935fc4e",
